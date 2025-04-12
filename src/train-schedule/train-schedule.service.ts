@@ -62,6 +62,12 @@ export class TrainScheduleService {
     const departureTime = new Date(createTrainScheduleDto.departureTime);
     const arrivalTime = new Date(createTrainScheduleDto.arrivalTime);
 
+    if (arrivalTime <= departureTime) {
+      throw new BadRequestException(
+        'Arrival time must be later than departure time',
+      );
+    }
+
     const overlappingSchedule = await this.trainScheduleRepository.findOne({
       where: {
         trainId: createTrainScheduleDto.trainId,
@@ -196,6 +202,12 @@ export class TrainScheduleService {
       ? new Date(updateTrainScheduleDto.arrivalTime)
       : trainSchedule.arrivalTime;
 
+    if (arrivalTime <= departureTime) {
+      throw new BadRequestException(
+        'Arrival time must be later than departure time',
+      );
+    }
+
     const overlappingSchedule = await this.trainScheduleRepository.findOne({
       where: {
         trainId,
@@ -207,8 +219,7 @@ export class TrainScheduleService {
 
     if (overlappingSchedule) {
       throw new BadRequestException(
-        `This train already has a schedule that overlaps with the requested time period. 
-        Existing schedule: from ${overlappingSchedule.departureTime.toISOString()} to ${overlappingSchedule.arrivalTime.toISOString()}`,
+        `This train already has a schedule that overlaps with the requested time period. `,
       );
     }
 

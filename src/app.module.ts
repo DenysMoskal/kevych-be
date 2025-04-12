@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { typeOrmConfig } from 'ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { TrainScheduleModule } from './train-schedule/train-schedule.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forRoot(typeOrmConfig),
     UsersModule,
     AuthModule,
+    TrainScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

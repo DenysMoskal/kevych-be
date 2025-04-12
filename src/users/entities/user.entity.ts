@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { TrainSchedule } from '../../train-schedule/entities/train-schedule.entity';
 
 @Entity('users')
 export class User {
@@ -24,6 +26,9 @@ export class User {
 
   @Column({ nullable: true })
   lastName: string;
+
+  @OneToMany(() => TrainSchedule, (trainSchedule) => trainSchedule.user)
+  trainSchedules: TrainSchedule[];
 
   @CreateDateColumn()
   createdAt: Date;

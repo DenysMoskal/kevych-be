@@ -87,14 +87,12 @@ export class TrainScheduleService {
     return this.trainScheduleRepository.find({
       where: { userId },
       order: { departureTime: 'ASC' },
-      relations: ['train', 'departureStationRef', 'arrivalStationRef', 'user'],
     });
   }
 
   async findOne(id: string, userId: string): Promise<TrainSchedule> {
     const trainSchedule = await this.trainScheduleRepository.findOne({
       where: { id },
-      relations: ['train', 'departureStationRef', 'arrivalStationRef', 'user'],
     });
 
     if (!trainSchedule) {
@@ -126,8 +124,10 @@ export class TrainScheduleService {
         throw new BadRequestException('Invalid train ID');
       }
       trainId = updateTrainScheduleDto.trainId;
+      updateTrainScheduleDto.trainNumber = train.name;
     }
 
+    let departureStationId = trainSchedule.departureStationId;
     if (updateTrainScheduleDto.departureStationId) {
       const departureStation = await this.transportItemsService.findOne(
         updateTrainScheduleDto.departureStationId,
@@ -138,8 +138,11 @@ export class TrainScheduleService {
       ) {
         throw new BadRequestException('Invalid departure station ID');
       }
+      departureStationId = updateTrainScheduleDto.departureStationId;
+      updateTrainScheduleDto.departureStation = departureStation.name;
     }
 
+    let arrivalStationId = trainSchedule.arrivalStationId;
     if (updateTrainScheduleDto.arrivalStationId) {
       const arrivalStation = await this.transportItemsService.findOne(
         updateTrainScheduleDto.arrivalStationId,
@@ -150,15 +153,11 @@ export class TrainScheduleService {
       ) {
         throw new BadRequestException('Invalid arrival station ID');
       }
+      arrivalStationId = updateTrainScheduleDto.arrivalStationId;
+      updateTrainScheduleDto.arrivalStation = arrivalStation.name;
     }
 
-    const newDepartureStationId =
-      updateTrainScheduleDto.departureStationId ||
-      trainSchedule.departureStationId;
-    const newArrivalStationId =
-      updateTrainScheduleDto.arrivalStationId || trainSchedule.arrivalStationId;
-
-    if (newDepartureStationId === newArrivalStationId) {
+    if (departureStationId === arrivalStationId) {
       throw new BadRequestException(
         'Departure and arrival stations must be different',
       );
@@ -187,28 +186,13 @@ export class TrainScheduleService {
       );
     }
 
-    if (updateTrainScheduleDto.trainId) {
-      const train = await this.transportItemsService.findOne(
-        updateTrainScheduleDto.trainId,
-      );
-      updateTrainScheduleDto.trainNumber = train.name;
-    }
-
-    if (updateTrainScheduleDto.departureStationId) {
-      const departureStation = await this.transportItemsService.findOne(
-        updateTrainScheduleDto.departureStationId,
-      );
-      updateTrainScheduleDto.departureStation = departureStation.name;
-    }
-
-    if (updateTrainScheduleDto.arrivalStationId) {
-      const arrivalStation = await this.transportItemsService.findOne(
-        updateTrainScheduleDto.arrivalStationId,
-      );
-      updateTrainScheduleDto.arrivalStation = arrivalStation.name;
-    }
-
-    Object.assign(trainSchedule, updateTrainScheduleDto);
+    Object.assign(trainSchedule, updateTrainScheduleDto, {
+      trainId,
+      departureStationId,
+      arrivalStationId,
+      departureTime,
+      arrivalTime,
+    });
 
     return this.trainScheduleRepository.save(trainSchedule);
   }

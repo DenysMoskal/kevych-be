@@ -57,6 +57,36 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Migrations
+
+```bash
+# using docker
+$ docker compose exec app npm run migration:run
+
+# generate migration (replace CreateUsers with name of the migration)
+$ npm run migration:generate migrations/{MIGR_NAME}
+
+# run migration
+$ npm run migration:run
+
+# revert migration
+$ npm run migration:revert
+
+# revert migration
+$ npm run schema:drop
+```
+
+## Documentation Swagger/Postman
+
+In project we use Swagger and Postman for simple testing tasks.
+For open documentation, open this link in your browser (localy)
+
+### http://localhost:4000/api
+
+Remember need to select port which you set in your environment.
+
+Or click in the <a href="http://localhost:4000/api">Link</a>
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

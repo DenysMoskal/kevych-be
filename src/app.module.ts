@@ -7,6 +7,7 @@ import { typeOrmConfig } from 'ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TrainScheduleModule } from './train-schedule/train-schedule.module';
+import { TransportItemsModule } from './transport-items/transport-items.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TrainScheduleModule } from './train-schedule/train-schedule.module';
     UsersModule,
     AuthModule,
     TrainScheduleModule,
+    TransportItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

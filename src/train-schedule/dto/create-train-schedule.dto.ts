@@ -1,19 +1,17 @@
-import { IsNotEmpty, IsString, IsDateString, Validate } from 'class-validator';
-import { DifferentStationsValidator } from '../validators/different-stations.validator';
+import { IsNotEmpty, IsDateString, IsUUID } from 'class-validator';
 
 export class CreateTrainScheduleDto {
   @IsNotEmpty()
-  @IsString()
-  trainNumber: string;
+  @IsUUID()
+  trainId: string;
 
   @IsNotEmpty()
-  @IsString()
-  departureStation: string;
+  @IsUUID()
+  departureStationId: string;
 
   @IsNotEmpty()
-  @IsString()
-  @Validate(DifferentStationsValidator, ['departureStation'])
-  arrivalStation: string;
+  @IsUUID()
+  arrivalStationId: string;
 
   @IsNotEmpty()
   @IsDateString()

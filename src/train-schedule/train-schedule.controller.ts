@@ -8,12 +8,14 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { TrainScheduleService } from './train-schedule.service';
 import { CreateTrainScheduleDto } from './dto/create-train-schedule.dto';
 import { UpdateTrainScheduleDto } from './dto/update-train-schedule.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { TrainScheduleSortBy, TrainScheduleSortOrder } from './types';
 
 @Controller('train-schedules')
 @UseGuards(JwtAuthGuard)
@@ -32,8 +34,16 @@ export class TrainScheduleController {
   }
 
   @Get()
-  findAll(@Request() req: RequestWithUser) {
-    return this.trainScheduleService.findAll(req.user.id);
+  findAll(
+    @Query('sortBy') sortBy?: TrainScheduleSortBy,
+    @Query('sortOrder') sortOrder?: TrainScheduleSortOrder,
+    @Query('search') search?: string,
+  ) {
+    return this.trainScheduleService.findAll({
+      sortBy,
+      sortOrder,
+      search,
+    });
   }
 
   @Get(':id')

@@ -11,6 +11,11 @@ import { CreateTrainScheduleDto } from './dto/create-train-schedule.dto';
 import { UpdateTrainScheduleDto } from './dto/update-train-schedule.dto';
 import { TransportItemsService } from '../transport-items/transport-items.service';
 import { TransportItemType } from '../transport-items/entities/transport-item.entity';
+import {
+  TrainScheduleParams,
+  TrainScheduleSortBy,
+  TrainScheduleSortOrder,
+} from './types';
 
 @Injectable()
 export class TrainScheduleService {
@@ -83,10 +88,31 @@ export class TrainScheduleService {
     return this.trainScheduleRepository.save(trainSchedule);
   }
 
-  async findAll(userId: string): Promise<TrainSchedule[]> {
+  async findAll(params: TrainScheduleParams = {}): Promise<TrainSchedule[]> {
+    const {
+      sortBy = TrainScheduleSortBy.DEPARTURE_TIME,
+      sortOrder = TrainScheduleSortOrder.ASC,
+      search,
+    } = params;
+
+    if (search) {
+      const queryBuilder =
+        this.trainScheduleRepository.createQueryBuilder('trainSchedule');
+
+      queryBuilder.where(
+        'LOWER(trainSchedule.trainNumber) LIKE LOWER(:search) OR ' +
+          'LOWER(trainSchedule.departureStation) LIKE LOWER(:search) OR ' +
+          'LOWER(trainSchedule.arrivalStation) LIKE LOWER(:search)',
+        { search: `%${search.toLowerCase()}%` },
+      );
+
+      queryBuilder.orderBy(`trainSchedule.${sortBy}`, sortOrder);
+
+      return queryBuilder.getMany();
+    }
+
     return this.trainScheduleRepository.find({
-      where: { userId },
-      order: { departureTime: 'ASC' },
+      order: { [sortBy]: sortOrder },
     });
   }
 
